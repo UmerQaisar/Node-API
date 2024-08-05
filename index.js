@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 
@@ -12,11 +13,12 @@ app.use(express.urlencoded({extended: false}))
 app.use('/api/products', productRoute)
 
 //server
-mongoose.connect("mongodb+srv://umerqaisar786:od5Afg5fsj94ystf@nodeapi.jl6a4iy.mongodb.net/?retryWrites=true&w=majority&appName=NodeApi")
+const port = process.env.PORT || 3000;
+mongoose.connect(process.env.MONGO_URL)
     .then(() => {
         console.log("Connected to mongo server...")
 
-        app.listen(3000, () => {
+        app.listen(port, () => {
             console.log('Express server is running on port 3000')
         })
     })
