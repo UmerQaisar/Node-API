@@ -1,7 +1,7 @@
 const prisma = require('../db/db.config.js');
 
 const createUser = async (req, res) => {
-    try{
+    try {
         const {name, email, password} = req.body
 
         const findUser = await prisma.user.findUnique({
@@ -17,13 +17,14 @@ const createUser = async (req, res) => {
         })
 
         return res.json({status: 200, data: user, message: 'User created successfully'})
-    }catch (err){
+    } catch (err) {
         console.log("Error: " + err.message)
+        return res.json({status: 500})
     }
 }
 
 const updateUser = async (req, res) => {
-    try{
+    try {
         const id = req.params.id;
         const {name, email, password} = req.body
 
@@ -33,44 +34,65 @@ const updateUser = async (req, res) => {
         })
 
         return res.json({status: 200, data: user, message: 'User updated successfully'})
-    }catch (err){
+    } catch (err) {
         console.log("Error: " + err.message)
+        return res.json({status: 500})
     }
 }
 
 const getUser = async (req, res) => {
-    try{
+    try {
         const id = req.params.id;
         const user = await prisma.user.findFirst({
             where: {id: Number(id)},
+            include: {
+                _count: {
+                    select: {
+                        post: true
+                    }
+                }
+            }
         })
 
         return res.json({status: 200, data: user})
-    }catch (err){
+    } catch (err) {
         console.log("Error: " + err.message)
+        return res.json({status: 500})
     }
 }
 
 const getUsers = async (req, res) => {
-    try{
-        const users = await prisma.user.findMany({})
+    try {
+        const users = await prisma.user.findMany({
+            include: {
+                post: {
+                    select: {
+                        title: true,
+                        description: true,
+                        comment: true
+                    }
+                },
+            }
+        })
 
         return res.json({status: 200, data: users})
-    }catch (err){
+    } catch (err) {
         console.log("Error: " + err.message)
+        return res.json({status: 500})
     }
 }
 
 const deleteUser = async (req, res) => {
-    try{
+    try {
         const id = req.params.id;
         const user = await prisma.user.delete({
             where: {id: Number(id)},
         })
 
         return res.json({status: 200, data: user, message: "User deleted successfully"})
-    }catch (err){
+    } catch (err) {
         console.log("Error: " + err.message)
+        return res.json({status: 500})
     }
 }
 
