@@ -1,4 +1,21 @@
 const prisma = require('../db/db.config.js');
+const jwt = require("jsonwebtoken");
+
+const loginUser = async (req, res) => {
+    const {email, password} = req.body
+    user = await prisma.user.findUnique({
+        where: {
+            email: email,
+            password: password
+        }
+    })
+    if(user){
+        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        res.json({ token });
+    }else{
+        res.json({status: 500, message: 'User not found'});
+    }
+}
 
 const createUser = async (req, res) => {
     try {
@@ -96,4 +113,4 @@ const deleteUser = async (req, res) => {
     }
 }
 
-module.exports = {createUser, updateUser, getUsers, getUser, deleteUser}
+module.exports = {createUser, updateUser, getUsers, getUser, deleteUser, loginUser}
