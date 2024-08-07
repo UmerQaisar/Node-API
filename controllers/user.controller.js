@@ -1,5 +1,6 @@
 const prisma = require('../db/db.config.js');
 const jwt = require("jsonwebtoken");
+const sendEmailQueue = require('../queue/email.queue.js')
 
 const loginUser = async (req, res) => {
     const {email, password} = req.body
@@ -113,4 +114,10 @@ const deleteUser = async (req, res) => {
     }
 }
 
-module.exports = {createUser, updateUser, getUsers, getUser, deleteUser, loginUser}
+const sendEmail = async (req, res) => {
+    const {emailBody} = req.body
+    await sendEmailQueue(emailBody);
+    return res.json({message: "Email sent successfully"})
+}
+
+module.exports = {createUser, updateUser, getUsers, getUser, deleteUser, loginUser, sendEmail}
