@@ -4,10 +4,14 @@ const app = express()
 const morgan = require('morgan')
 const routes = require('./routes/application.routes.js')
 const mongo = require('./db/db.config.mongo.js')
+const passport = require('passport')
+const jwtStrategy = require('./config/jwt.strategy.js')
 
 // middlewares
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
+app.use(passport.initialize())
+passport.use(jwtStrategy)
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms'))
 app.use(routes)
 
