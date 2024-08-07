@@ -2,35 +2,24 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
-
-const mongoose = require('mongoose')
-const productRoute = require('./routes/product.routes.js')
-const userRoute = require('./routes/user.routes.js')
-const postRoute = require('./routes/post.routes.js')
-const commentRoute = require('./routes/comment.routes.js')
+const routes = require('./routes/application.routes.js')
+const mongo = require('./db/db.config.mongo.js')
 
 // middlewares
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms'))
-
-//routes
-app.use('/api/products', productRoute)
-app.use('/api/users', userRoute)
-app.use('/api/posts', postRoute)
-app.use('/api/comments', commentRoute)
+app.use(routes)
 
 //server
 const port = process.env.PORT || 3000;
-mongoose.connect(process.env.MONGO_URL)
-    .then(() => {
-        console.log("Connected to mongo server...")
-
+(async () => {
+    try {
+        await mongo;
         app.listen(port, () => {
             console.log('Express server is running on port 3000')
         })
-    })
-    .catch((e) => {
+    } catch (e) {
         console.log("Connection failed. " + e)
-    })
-
+    }
+})();
